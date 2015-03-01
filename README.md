@@ -11,4 +11,4 @@ sudo usermod -a -G video pi
 
 git clone http://github.com/kwadroke/space_pi-rates.git
 cd space_pi-rates
-sudo python console.py
+python console.py

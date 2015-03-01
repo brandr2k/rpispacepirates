@@ -3,7 +3,6 @@ from pygame.locals import *
 import os
 import math
 import platform
-import time ## remove this later
 
 
 SCREENRES=(640, 480)
@@ -80,7 +79,9 @@ def main():
 		os.putenv('SDL_FBDEV', '/dev/fb0')
 		os.putenv('SDL_VIDEODRIVER', 'fbcon')
 		os.putenv('SDL_NOMOUSE', '1')
-		videocheck=1
+		videocheck=0  #temp
+		#videocheck=1
+		
 	else:
 		print "Not Linux, BOO!"
 		videocheck=0
@@ -103,7 +104,6 @@ def main():
 			if not os.getenv('SDL_VIDEODRIVER'):
 				os.putenv('SDL_VIDEODRIVER', driver)
 			try:
-				time.sleep(5)
 				pygame.init()
 			except pygame.error:
 				print 'Driver: {0} failed.'.format(driver)
@@ -115,7 +115,6 @@ def main():
 			raise Exception('No suitable video driver found!')
 	##---
 	else: 
-		time.sleep(5)
 		pygame.init()
 		
 	##---
