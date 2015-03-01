@@ -2,6 +2,9 @@ import pygame
 from pygame.locals import *
 import os
 import math
+import platform
+
+
 
 SCREENRES=(640, 480)
 
@@ -69,8 +72,15 @@ def rendertext(text,type,line,col):
 	background.blit(mytext, mypos)
 
 def main():
-	#enable the below code for Linux
-	videocheck=0
+	videocheck=2
+	#OS Detection to check the video system
+	thisplatform=platform.system()
+	if thisplatform=="Linux":
+		print "Linux Yay!"
+		videocheck=1
+	else:
+		print "Not Linux, BOO!"
+		videocheck=0
 	
 	if videocheck==1:
 		##from https://learn.adafruit.com/pi-video-output-using-pygame/pointing-pygame-to-the-framebuffer
@@ -107,10 +117,8 @@ def main():
 	#screen = pygame.display.set_mode(size, pygame.FULLSCREEN)	
 	##End Adafruit
 	
-	## Initialise screen
-	#pygame.init()
 	screen = pygame.display.set_mode(SCREENRES)
-	#pygame.display.set_caption('Space Pi-Rates')
+	pygame.display.set_caption('Space Pi-Rates')
 	
 	##We're running this without a mouse, so disabele mouse pointer
 	pygame.mouse.set_visible(False)
