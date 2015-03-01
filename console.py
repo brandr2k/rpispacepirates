@@ -77,6 +77,9 @@ def main():
 	thisplatform=platform.system()
 	if thisplatform=="Linux":
 		print "Linux Yay!"
+		os.putenv('SDL_FBDEV', '/dev/fb0')
+		os.putenv('SDL_VIDEODRIVER', 'fbcon')
+		os.putenv('SDL_NOMOUSE', '1')
 		videocheck=1
 	else:
 		print "Not Linux, BOO!"
