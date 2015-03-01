@@ -3,7 +3,7 @@ from pygame.locals import *
 import os
 import math
 import platform
-
+import time ## remove this later
 
 
 SCREENRES=(640, 480)
@@ -82,6 +82,8 @@ def main():
 		print "Not Linux, BOO!"
 		videocheck=0
 	
+	
+	
 	if videocheck==1:
 		##from https://learn.adafruit.com/pi-video-output-using-pygame/pointing-pygame-to-the-framebuffer
 		disp_no = os.getenv("DISPLAY")
@@ -93,10 +95,12 @@ def main():
 		drivers = ['fbcon', 'directfb', 'svgalib']
 		found = False
 		for driver in drivers:
+			print "Trying Driver: %s" % (driver)
 			## Make sure that SDL_VIDEODRIVER is set
 			if not os.getenv('SDL_VIDEODRIVER'):
 				os.putenv('SDL_VIDEODRIVER', driver)
 			try:
+				time.sleep(5)
 				pygame.init()
 			except pygame.error:
 				print 'Driver: {0} failed.'.format(driver)
@@ -108,6 +112,7 @@ def main():
 			raise Exception('No suitable video driver found!')
 	##---
 	else: 
+		time.sleep(5)
 		pygame.init()
 		
 	##---
