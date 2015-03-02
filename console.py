@@ -182,7 +182,28 @@ def main():
 			elif event.type == KEYDOWN:
 				if event.key == K_ESCAPE:
 					return
-
+				elif event.key == K_1:
+					#send key
+				elif event.key == K_2:
+					#send key
+				elif event.key == K_3:
+					#send key
+				elif event.key == K_4:
+					#send key
+				elif event.key == K_5:
+					#send key
+				elif event.key == K_UP:
+					#send key
+				elif event.key == K_DOWN:
+					#send key
+				elif event.key == K_LEFT:
+					#send key
+				elif event.key == K_RIGHT:
+					#send key
+					
+				else:
+					#do nothing
+					
 		screen.blit(background, (0, 0))
 		pygame.display.flip()
 		
