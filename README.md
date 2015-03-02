@@ -8,16 +8,17 @@ Raspberry Pi Instructions:
 
 
 run these commands at the terminal to setup (only needs to be done once):
-```sudo echo framebuffer_width=640 >> /boot/config.txt
-sudo echo framebuffer_width=480 >> /boot/config.txt
-sudo chown root:video /dev/fb*
-sudo usermod -a -G video pi
-cd /home/pi
-git clone http://github.com/kwadroke/space_pi-rates.git
-sudo reboot
-```
+
+	sudo echo framebuffer_width=640 >> /boot/config.txt
+	sudo echo framebuffer_width=480 >> /boot/config.txt
+	sudo chown root:video /dev/fb*
+	sudo usermod -a -G video pi
+	cd /home/pi
+	git clone http://github.com/kwadroke/space_pi-rates.git
+	sudo reboot
+
 
 To run game:
-```cd space_pi-rates
-python console.py
-```
+
+	cd space_pi-rates
+	python console.py
