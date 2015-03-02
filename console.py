@@ -7,7 +7,7 @@ import socket   #for sockets
 import sys  #for exit
 import time
 from thread import *
-from queue import Queue
+from Queue import *
 
 ## networking - connect to this host
 HOST="192.168.137.1"
