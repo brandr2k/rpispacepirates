@@ -5,6 +5,7 @@ import math
 import platform
 import socket   #for sockets
 import sys  #for exit
+import time
 
 
 ## networking - connect to this host
@@ -49,9 +50,18 @@ COLORSELECTED=(128,128,0)
 ##Boxes
 MARGIN=5
 
-
-
+DRAWN="0"
+s=0
 clock=pygame.time.Clock()
+
+def serverconnect():
+	try:
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		print "Creating socket..."
+		sendtoserver("CONNECT|"+CONSOLE)
+	except socket.error:
+		rendertext("OFFLINE","CLEAR",5,1)
+		print 'Failed to create socket'
 
 
 def rendertext(text,type,line,col):
@@ -73,6 +83,9 @@ def rendertext(text,type,line,col):
 	elif type=="active":
 		COLOR=COLORON
 		bg=1
+	elif type=="CLEAR":
+		COLOR=COLORDANGER
+		background.fill(COLORDEFAULTBACK)
 	else:
 		COLOR=COLOROTHER
 	if line==0:
@@ -91,6 +104,9 @@ def rendertext(text,type,line,col):
 	textpos =mytext.get_rect()
 	background.blit(mytext, mypos)
 
+
+
+
 def sendtoserver(msg):
 	msg=str(msg)
 	try :
@@ -103,7 +119,14 @@ def sendtoserver(msg):
 		addr = d[1]
 		if debug: print 'Server reply : ' + reply
 	except socket.error, msg:
-		print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+		if debug: print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+		if DRAWN=="1":
+			rendertext("CONSOLE OFFLINE","CLEAR",5,1)
+		else:
+			print "CONSOLE OFFLINE"
+			print "retrying in 5 seconds"
+			time.sleep(5)
+			serverconnect()    
 	
 
 
@@ -157,24 +180,21 @@ def main():
 	##---
 	size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 	print "Framebuffer size: %d x %d" % (size[0], size[1])
-	#screen = pygame.display.set_mode(size, pygame.FULLSCREEN)	
-	#screen = pygame.display.set_mode(size, pygame.FULLSCREEN)	
 	##End Adafruit
-	
-	#screen = pygame.display.set_mode(SCREENRES)
+
 	pygame.display.set_caption('Space Pi-Rates')
 	
 	##We're running this without a mouse, so disabele mouse pointer
 	pygame.mouse.set_visible(False)
-	
 
 	## Fill background
 	global background
 	background = pygame.Surface(screen.get_size())
 	background = background.convert()
 	background.fill(COLORDEFAULTBACK)
-
-
+	#Say Screen is drawn
+	DRAWN="1"
+	
 	## Render Text
 	##30 Chars Wide - MAX?
 	rendertext("="+ CONSOLE +"=","title",0,0)
@@ -193,7 +213,7 @@ def main():
 	rendertext("DOCKING:","descript",3,2)
 	rendertext("OFF","value",3,3)
 	rendertext("SHIELDS:","descript",4,2)
-	rendertext("DOWN","",4,3)
+	rendertext("DOWN","warn",4,3)
 	
 	rendertext("TARGET DIR:","descript",9,0)
 	rendertext("208","info",9,1)
@@ -203,7 +223,7 @@ def main():
 	rendertext("FRONT","info",10,2)
 	
 	#rendertext("WWWWWWWWWMWWWWWWWWWMWWWWWWWWWMWWWWWWWWWMWWWWWWWWWM","descript",10)
-        
+        sendtoserver("CONNECT"+CONSOLE)
 
 	## Blit everything to the screen
 	screen.blit(background, (0, 0))
@@ -217,7 +237,7 @@ def main():
 				return
 			elif event.type == KEYDOWN:
 				if event.key == K_ESCAPE:
-					sendtoserver("DISCONNECT|HELM");
+					sendtoserver("DISCONNECT|"+CONSOLE);
 					return
 				elif event.key == K_1:
 					#send key
@@ -275,14 +295,14 @@ def main():
 		
 		
 clock.tick(20)
-
 try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    print "Creating socket..."
-    sendtoserver("CONNECT|HELM");
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	print "Creating socket..."
+	sendtoserver("CONNECT|"+CONSOLE)
 except socket.error:
-    print 'Failed to create socket'
-    
+	rendertext("OFFLINE","CLEAR",5,1)
+	print 'Failed to create socket'
+
  
 screen = pygame.display.set_mode(SCREENRES)
 if __name__ == '__main__': main()
