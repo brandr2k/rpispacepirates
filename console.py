@@ -236,11 +236,11 @@ def main():
 		
 clock.tick(20)
 
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-except socket.error:
-    print 'Failed to create socket'
-    sys.exit()
+#try:
+    #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#except socket.error:
+    #print 'Failed to create socket'
+    #sys.exit()
  
 
 if __name__ == '__main__': main()
