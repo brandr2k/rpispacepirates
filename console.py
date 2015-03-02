@@ -3,8 +3,15 @@ from pygame.locals import *
 import os
 import math
 import platform
+import socket   #for sockets
+import sys  #for exit
 
 
+## networking - connect to this host
+HOST="192.168.1.4"
+PORT=1701
+
+## screen setup
 SCREENRES=(640, 480)
 
 DEFAULTFONT='assets/leaguegothic-regular-webfont.ttf'
@@ -37,6 +44,8 @@ COLORSELECTED=(128,128,0)
 
 ##Boxes
 MARGIN=5
+
+
 
 clock=pygame.time.Clock()
 
@@ -165,8 +174,6 @@ def main():
 	rendertext("MAIN VIEWER:","descript",10,1)
 	rendertext("FRONT","info",10,2)
 	
-	
-	
 	#rendertext("WWWWWWWWWMWWWWWWWWWMWWWWWWWWWMWWWWWWWWWMWWWWWWWWWM","descript",10)
         
 
@@ -185,33 +192,42 @@ def main():
 				elif event.key == K_1:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_2:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_3:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_4:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_5:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_UP:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_DOWN:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_LEFT:
 					#send key
 					print "key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 				elif event.key == K_RIGHT:
 					#send key
 					print "key pressed %s" % (event.key)
-					
+					rendertext(event.key,"descript",11,1)
 				else:
 					print "other key pressed %s" % (event.key)
+					rendertext(event.key,"descript",11,1)
 					#do nothing
 					
 		screen.blit(background, (0, 0))
@@ -220,6 +236,11 @@ def main():
 		
 clock.tick(20)
 
-
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+except socket.error:
+    print 'Failed to create socket'
+    sys.exit()
+ 
 
 if __name__ == '__main__': main()
