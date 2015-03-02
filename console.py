@@ -192,42 +192,42 @@ def main():
 				elif event.key == K_1:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("1","descript",11,1)
 				elif event.key == K_2:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("2","descript",11,1)
 				elif event.key == K_3:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("3","descript",11,1)
 				elif event.key == K_4:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("4","descript",11,1)
 				elif event.key == K_5:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("5","descript",11,1)
 				elif event.key == K_UP:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("UP","descript",11,1)
 				elif event.key == K_DOWN:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("DOWN","descript",11,1)
 				elif event.key == K_LEFT:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("LEFT","descript",11,1)
 				elif event.key == K_RIGHT:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("RIGHT","descript",11,1)
 				else:
 					print "other key pressed %s" % (event.key)
-					rendertext(event.key,"descript",11,1)
+					rendertext("OTHER","descript",11,1)
 					#do nothing
 					
 		screen.blit(background, (0, 0))
