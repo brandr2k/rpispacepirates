@@ -10,6 +10,9 @@ import sys  #for exit
 ## networking - connect to this host
 HOST="192.168.1.4"
 PORT=1701
+CONSOLE="HELM"
+
+debug=0  #print to screen for debugging
 
 ## screen setup
 SCREENRES=(640, 480)
@@ -32,6 +35,7 @@ COLORALERTYELLOW=(128,128,0)
 
 ##color for background
 COLORDEFAULTBACK=(0,0,0)
+COLORDEFAULTVALUEBACK=(26,26,26)
 
 ##color for boxes
 COLORON=(0,0,255)
@@ -52,18 +56,23 @@ clock=pygame.time.Clock()
 
 def rendertext(text,type,line,col):
 	font = pygame.font.Font(DEFAULTFONT, DEFAULTFONTSIZE)	
+	bg=0
 	if type=="title":
 		COLOR=COLORTITLE
 	elif type=="descript":
 		COLOR=COLORDESCRIPT
 	elif type=="value":
 		COLOR=COLORVALUE
+		bg=1
 	elif type=="warn":
 		COLOR=COLORDANGER
+		bg=1
 	elif type=="info":
 		COLOR=COLORINFO
+		bg=1
 	elif type=="active":
 		COLOR=COLORON
+		bg=1
 	else:
 		COLOR=COLOROTHER
 	if line==0:
@@ -75,9 +84,28 @@ def rendertext(text,type,line,col):
 	else:
 		mycol=(158+5)*col
 	mypos=(mycol,myline)
+	pygame.draw.rect(background,COLORDEFAULTBACK,(mycol,myline,155,DEFAULTFONTSIZE),0)
+	if bg==1:
+		pygame.draw.rect(background,COLORDEFAULTVALUEBACK,(mycol,myline,155,DEFAULTFONTSIZE),0)
 	mytext=font.render(text, 1,COLOR)
 	textpos =mytext.get_rect()
 	background.blit(mytext, mypos)
+
+def sendtoserver(msg):
+	msg=str(msg)
+	try :
+		#Set the whole string
+		s.sendto(msg, (HOST, PORT))
+        
+		# receive data from client (data, addr)
+		d = s.recvfrom(1024)
+		reply = d[0]
+		addr = d[1]
+		if debug: print 'Server reply : ' + reply
+	except socket.error, msg:
+		print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+	
+
 
 def main():
 	videocheck=2
@@ -133,7 +161,7 @@ def main():
 	#screen = pygame.display.set_mode(size, pygame.FULLSCREEN)	
 	##End Adafruit
 	
-	screen = pygame.display.set_mode(SCREENRES)
+	#screen = pygame.display.set_mode(SCREENRES)
 	pygame.display.set_caption('Space Pi-Rates')
 	
 	##We're running this without a mouse, so disabele mouse pointer
@@ -149,7 +177,7 @@ def main():
 
 	## Render Text
 	##30 Chars Wide - MAX?
-	rendertext("=HELM=","title",0,0)
+	rendertext("="+ CONSOLE +"=","title",0,0)
 	#rendertext("=ENGINEERING=","title",0,0)
 	rendertext("ENERGY:","descript",1,2)
 	rendertext("1000","info",1,3)
@@ -183,64 +211,78 @@ def main():
 
 	## Event loop
 	while 1:
+					
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				return
 			elif event.type == KEYDOWN:
 				if event.key == K_ESCAPE:
+					sendtoserver("DISCONNECT|HELM");
 					return
 				elif event.key == K_1:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("1","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("1","descript",0,3)
 				elif event.key == K_2:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("2","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("2","descript",0,3)
 				elif event.key == K_3:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("3","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("3","descript",0,3)
 				elif event.key == K_4:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("4","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("4","descript",0,3)
 				elif event.key == K_5:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("5","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("5","descript",0,3)
 				elif event.key == K_UP:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("UP","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("UP","descript",0,3)
 				elif event.key == K_DOWN:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("DOWN","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("DOWN","descript",0,3)
 				elif event.key == K_LEFT:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("LEFT","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("LEFT","descript",0,3)
 				elif event.key == K_RIGHT:
 					#send key
 					print "key pressed %s" % (event.key)
-					rendertext("RIGHT","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("RIGHT","descript",0,3)
 				else:
 					print "other key pressed %s" % (event.key)
-					rendertext("OTHER","descript",11,1)
+					#sendtoserver(event.key)
+					if debug: rendertext("OTHER","descript",0,3)
 					#do nothing
-					
+				sendtoserver(event.key)
 		screen.blit(background, (0, 0))
 		pygame.display.flip()
 		
 		
 clock.tick(20)
 
-#try:
-    #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#except socket.error:
-    #print 'Failed to create socket'
-    #sys.exit()
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    print "Creating socket..."
+    sendtoserver("CONNECT|HELM");
+except socket.error:
+    print 'Failed to create socket'
+    
  
-
+screen = pygame.display.set_mode(SCREENRES)
 if __name__ == '__main__': main()
