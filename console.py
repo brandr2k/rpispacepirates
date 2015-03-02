@@ -184,24 +184,34 @@ def main():
 					return
 				elif event.key == K_1:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_2:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_3:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_4:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_5:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_UP:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_DOWN:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_LEFT:
 					#send key
+					print "key pressed %s" % (event.key)
 				elif event.key == K_RIGHT:
 					#send key
+					print "key pressed %s" % (event.key)
 					
 				else:
+					print "other key pressed %s" % (event.key)
 					#do nothing
 					
 		screen.blit(background, (0, 0))
