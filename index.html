@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Space Pi-rates : Starship Bridge Simulator for the Raspberry Pi">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Space Pi-rates</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kwadroke/space_pi-rates">View on GitHub</a>
+
+          <h1 id="project_title">Space Pi-rates</h1>
+          <h2 id="project_tagline">Starship Bridge Simulator for the Raspberry Pi</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kwadroke/space_pi-rates/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kwadroke/space_pi-rates/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Space Pi-rates is a Starship Bridge Simulator created for the Raspberry Pi. Space Pi-rates is inspired by Artemis Spaceship Bridge Simulator.</p>
+
+<p>Raspberry Pi Instructions:</p>
+
+<p>run these commands at the terminal to setup (only needs to be done once):</p>
+
+<pre><code>sudo echo framebuffer_width=640 &gt;&gt; /boot/config.txt
+sudo echo framebuffer_width=480 &gt;&gt; /boot/config.txt
+sudo chown root:video /dev/fb*
+sudo usermod -a -G video pi
+cd /home/pi
+git clone http://github.com/kwadroke/space_pi-rates.git
+    sudo apt-get update
+sudo apt-get install python-pip 
+    sudo pip install pi3d
+    sudo pip install Pillow
+sudo reboot
+</code></pre>
+
+<p>To run game (console):</p>
+
+<pre><code>cd space_pi-rates
+python console.py
+</code></pre>
+
+<p>To run game (mainscreen):</p>
+
+<pre><code>cd space_pi-rates
+sudo python mainscreen.py
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Space Pi-rates maintained by <a href="https://github.com/kwadroke">kwadroke</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
