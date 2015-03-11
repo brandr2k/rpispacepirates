@@ -413,8 +413,8 @@ def json_load(ae, others): ### Replace this with UDP networking
   params = urllib_parse.urlencode({"id":ae.refid, "tm":tm_now, "x":ae.x, "z":ae.z,
           "json":jstring, "nearest":n_id, "damage":n_damage})
   others["start"] = tm_now #used for polling freqency
-  urlstring = "http://www.eldwick.org.uk/sharecalc/rpi_json.php?{0}".format(params)
-  #urlstring = "http://localhost/rpi_json.php?{0}".format(params)
+  #urlstring = "http://www.eldwick.org.uk/sharecalc/rpi_json.php?{0}".format(params)
+  urlstring = "http://localhost/rpi_json.php?{0}".format(params)
   try:
     r = urllib_request.urlopen(urlstring)
     if r.getcode() == 200: #good response
