@@ -1,0 +1,32 @@
+ToDo
+
+
+mainscreen.py
+* Replace PHP & urlencode/decode  with UDP Python networking
+* connect to consoleserver.py
+
+console.py
+* fix lockup problem with networking
+
+sensorsconsole.py
+* CREATE
+* use mainscreen.py code for displaying instrument data full screen with details
+* connect to consoleserver.py
+
+server.py/consoleserver.py
+* rename to consoleserver.py
+* listen to mainscreen.py
+* connect to gameserver.py
+* add more consoles
+
+gameserver.py
+* CREATE
+* listen to multiple bridges (consoleserver.py)
+* add AI ships
+
+
+Graphics:
+* Add stations
+* add asteroids
+
+
