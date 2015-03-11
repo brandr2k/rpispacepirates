@@ -10,7 +10,6 @@ import time
 import select
 import thread
 
-=======
 from thread import *
 from Queue import *
 
