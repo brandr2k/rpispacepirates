@@ -1,6 +1,5 @@
 ToDo
 
-
 mainscreen.py
 * Replace PHP & urlencode/decode  with UDP Python networking
 * connect to consoleserver.py
@@ -28,5 +27,8 @@ gameserver.py
 Graphics:
 * Add stations
 * add asteroids
+
+README.md
+* Add instructions for Splashscreen
 
 
