@@ -15,10 +15,21 @@ run these commands at the terminal to setup (only needs to be done once):
 	sudo usermod -a -G video pi
 	cd /home/pi
 	git clone http://github.com/kwadroke/space_pi-rates.git
+	sudo apt-get update
+	sudo apt-get install python-pip 
+	sudo pip install pi3d
+	sudo pip install Pillow
 	sudo reboot
 
 
-To run game:
+To run game (console):
 
 	cd space_pi-rates
+	python server.py &
 	python console.py
+	
+	
+To run game (mainscreen):
+
+	cd space_pi-rates
+	sudo python mainscreen.py
