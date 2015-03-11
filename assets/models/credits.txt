@@ -1,0 +1,3 @@
+OBJ files created by Kwadroke of The Wired
+
+shiptexture.png & cigar1.png uses metalhull.jpg from Pi3D_demos (https://github.com/pi3d/pi3d_demos)

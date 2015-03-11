@@ -7,7 +7,7 @@ rpi_json.php) json serialisation and threading.
 
 """
 Space Pi-Rates mainscreen
-originally Dogfight.py from pi3d_demos
+originally Dogfight.py from pi3d_demos - https://github.com/pi3d/pi3d_demos
 
 """
 
