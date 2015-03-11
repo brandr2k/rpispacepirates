@@ -6,14 +6,14 @@ import platform
 import socket   #for sockets
 import sys  #for exit
 import time
-<<<<<<< HEAD
+
 import select
 import thread
 
 =======
 from thread import *
 from Queue import *
->>>>>>> 17ab6f792dd47e1051735788dff4722251f4f5ac
+
 
 ## networking - connect to this host
 HOST="127.0.0.1"
