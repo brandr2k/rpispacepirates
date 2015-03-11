@@ -7,12 +7,20 @@ PORT = 1701 # Arbitrary non-privileged port
 
 CLIENTLIST={}
 
+def sendtoms(sendmsg,addr):  #send data to mainscreen
+	print sendmsg
+	s.sendto(sendmsg, addr)
+
 def rendertext(sendmsg, sendaddr):  #send data to client
 	print sendmsg
 	s.sendto(sendmsg, sendaddr)
 	
 
 def drawhelm(addr):
+	## Clear Console Offline line
+	
+	rendertext(' ,CLEAR,5,1',addr)	
+	
 	rendertext('=HELM=,title,0,0',addr)
 	rendertext('ENERGY:,descript,1,2',addr)
 	rendertext('1000,info,1,3',addr)
@@ -69,9 +77,22 @@ while 1:
      
 		if not data: 
 			break
+		else:
+			rendertext("OK",addr)
+			
 		print 'Message[' + addr[0] + ':' + str(addr[1]) + '] - ' + data.strip()
+		
 		CLIENT="NULL"
-		if data=="CONNECT-HELM":
+		
+		if data=="CONNECT-MAINSCREEN":
+			CLIENT="MAINSCREEN"
+			if CLIENTLIST.has_key("MAINSCREEN"):
+				print "MAINSCREEN already here"
+			else:
+				CLIENTLIST["MAINSCREEN"]=addr	
+		
+		
+		elif data=="CONNECT-HELM":
 			CLIENT="HELM"
 			print "Sending screen setup data.."
 			drawhelm(addr)
@@ -80,7 +101,17 @@ while 1:
 				print "HELM already here"
 			else:
 				CLIENTLIST["HELM"]=addr
-
+			
+			
+		elif 'HELM-KEY_' in data:
+			print "key recv from helm: $s" % (keypress)
+			keypress=data.strip('HELM-KEY_')
+			#Send keys to mainscreen
+			sendtoms(keypress,CLIENTLIST["MAINSCREEN"])
+			
+			
+		elif data=="echo":
+			rendertext(data, sendaddr)
 	except (KeyboardInterrupt, SystemExit):
 		sys.exit()
      

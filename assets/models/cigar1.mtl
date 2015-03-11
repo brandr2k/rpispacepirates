@@ -1,0 +1,51 @@
+# Material file for cigar1.obj
+
+newmtl main
+	Ns 0
+	d 1
+	illum 2
+	Kd 0.15 0.15 0.15
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+
+newmtl bottom
+	Ns 0
+	d 1
+	illum 2
+	Kd 0.3 0.3 0.3
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+
+newmtl rings
+	Ns 0
+	d 1
+	illum 2
+	Kd -1.0 -1.0 1.0
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+
+newmtl thrust
+	Ns 0
+	d 1
+	illum 2
+	Kd 1.0 -1.0 1.0
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+
+newmtl support
+	Ns 0
+	d 1
+	illum 2
+	Kd 0.6 0.6 0.6
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+
+newmtl main1
+	Ns 0
+	d 1
+	illum 2
+	Kd 0.8 0.8 0.8
+	Ks 0.0 0.0 0.0
+	Ka 0.2 0.2 0.2
+	map_Kd cigar1.png
+

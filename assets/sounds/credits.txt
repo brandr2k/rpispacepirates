@@ -1,0 +1,13 @@
+rlaunch.wav, slimeball.wav, explode.wav
+
+Sounds (c) by Michel Baradari apollo-music.de
+
+Licensed under CC BY 3.0 http://creativecommons.org/licenses/by/3.0/
+
+Hosted on opengameart.org
+
+===============
+brownnoise.ogg
+
+Sound created by Kwadroke of The Wired for "Space Pi-rates"
+Public Domain

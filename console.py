@@ -6,11 +6,17 @@ import platform
 import socket   #for sockets
 import sys  #for exit
 import time
+<<<<<<< HEAD
+import select
+import thread
+
+=======
 from thread import *
 from Queue import *
+>>>>>>> 17ab6f792dd47e1051735788dff4722251f4f5ac
 
 ## networking - connect to this host
-HOST="192.168.137.1"
+HOST="127.0.0.1"
 PORT=1701
 CONSOLE="HELM"
 
@@ -19,7 +25,7 @@ debug=1  #print to screen for debugging
 ## screen setup
 SCREENRES=(640, 480)
 
-DEFAULTFONT='assets/leaguegothic-regular-webfont.ttf'
+DEFAULTFONT='assets/fonts/leaguegothic-regular-webfont.ttf'
 DEFAULTFONTSIZE=42
 DEFAULTFONTPAD=DEFAULTFONTSIZE
 ##color for fonts
@@ -47,66 +53,37 @@ COLORSELECTED=(128,128,0)
 MARGIN=5
 
 ##random check variables
-DRAWN="0"
-s=0
+DRAWN=0
+
+SVRCONN=0
 count=0
-#clock=pygame.time.Clock()
 
-class serverdata():
-	def startnet(bogus):
-		#enable networking
-		try:
-			global s
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			print "Creating socket..."
-		except socket.error:
-			rendertext("OFFLINE","CLEAR",5,1)
-			print 'Failed to create socket'
-		# receive data from client (data, addr)
-		
-
-		while 1:		
-			#print "got data"
-			d = s.recvfrom(1024)
-			reply = d[0]
-			addr = d[1]
-			if debug: print 'Server reply : ' + reply
-			if reply=="OK" or reply=="HELLO":
-				if debug: print reply
-			else:
-				#split out list of strings for building GUI
-				text, type, line,col=reply.split(',')
-				main.rendertext(text, type, line,col)
 			
-			
-	def sendtoserver(msg):
-		msg=str(msg)
-		try :
-			#Set the whole string
-			
-			s.sendto(msg, (HOST, PORT))
-		except socket.error, msg:
-			if debug: print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
-			if DRAWN=="1":
-				rendertext("CONSOLE OFFLINE","CLEAR",5,1)
-				#drawscreen()
-			else:
-				print "CONSOLE OFFLINE"
-				print "retrying in 5 seconds"
-				time.sleep(5)
-				serverconnect()    
-
-
+def sendtoserver(msg):
+	## Send messages to server
+	msg=str(msg)
+	try :
+		#Set the whole string
+		if debug: print "sending message"
+		s.sendto(msg, (HOST, PORT))
+	except socket.error, msg:
+		if debug: print 'Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+		if DRAWN=="1":
+			rendertext("CONSOLE OFFLINE","CLEAR",5,1)
+			#drawscreen()
+		else:
+			print "CONSOLE OFFLINE"
+			print "retrying in 5 seconds"
+			#time.sleep(5)
+			#serverconnect()    
 
 def drawscreen():
 	## render to screen
-	global count
 	screen.blit(background, (0, 0))
 	pygame.display.flip()
-	#count=count+1
-	#print count
-
+	
 def rendertext(text,type,line,col):
+	## Display text to screen
 	col=int(col)
 	line=int(line)
 	text=str(text)
@@ -154,14 +131,13 @@ def rendertext(text,type,line,col):
 
 
 def main():
-		#OS Detection to check the video system
+		## OS Detection to check the video system
 		thisplatform=platform.system()
 		if thisplatform=="Linux":
 			print "Linux Yay!"
 			os.putenv('SDL_FBDEV', '/dev/fb0')
 			os.putenv('SDL_VIDEODRIVER', 'fbcon')
 			os.putenv('SDL_NOMOUSE', '1')
-		
 		else:
 			print "Not Linux, BOO!"
 			
@@ -172,7 +148,7 @@ def main():
 
 		pygame.display.set_caption('Space Pi-Rates')
 	
-		##We're running this without a mouse, so disabele mouse pointer
+		##We're running this without a mouse, so disable mouse pointer
 		pygame.mouse.set_visible(False)
 
 		## Fill background
@@ -185,38 +161,87 @@ def main():
 		drawscreen()
 		DRAWN=1
 		
-		q=Queue()
-		#Start Treads
-		t1 = Thread(target=serverdata.startnet,args=(s,))
-		t1.start()
-		## Tell server who we are
-		serverdata.sendtoserver("CONNECT-"+CONSOLE)
+
+def setonline():
+	## Clear offline screen
+	#rendertext("","CLEAR",5,1)	
+	background.fill(COLORDEFAULTBACK)
+	drawscreen()
+	print "Online"
+
+def setoffline():
+	## Clear Screen and put offline message on screen
+	background.fill(COLORDEFAULTBACK)
+	rendertext("CONSOLE OFFLINE","CLEAR",5,1)	
+
+def listenerloop(soc):  ##Threading this due to hangups between pygame listening for events and listening for incoming data from network
+	
+	setonline() ## Clear offline message
+	while 1:
+		#if debug: print "running network loop"
+		#Network listener
+		if SVRCONN==1:
+			
+			#global reply
+			#print "loop: server is connected"
+			reply, addr = soc.recvfrom(1024) #(1024)
+			
+			if reply:
+				if debug: print 'Server reply : ' + reply
+				if reply=="OK" or reply=="HELLO":
+					if debug: print reply
+				else:
+					#split out list of strings for building GUI
+					text, type, line,col=reply.split(',')
+					rendertext(text, type, line,col)
+					print "text"+text
+			else:
+				if debug: print "No reply"
+				
+			#if debug: print "end network loop."
 		
 def eventloop():
 	## Event loop
-	
+	#startnet()
+	mythread=thread.start_new_thread(listenerloop, (s, ))
+	setoffline() #Set console offline screen, incase we can't connect to server
 	while 1:	
-			
-		for event in pygame.event.get():
+		#Quit	
+		for event in pygame.event.get(QUIT):
+			sendtoserver("DISCONNECT-"+CONSOLE);
+			return
+		# Key Down
+		for event in pygame.event.get(KEYDOWN):
 			#print "received event"
-			if event.type == QUIT:
-				sendtoserver("DISCONNECT-"+CONSOLE);
-				return
-			elif event.type == KEYDOWN:
+			if event.type == KEYDOWN:
 				if event.key == K_ESCAPE:
 					sendtoserver("DISCONNECT-"+CONSOLE);
 					return
 				else:
 					print "key pressed %s" % (event.key)
 					if debug: rendertext(str(event.key),"descript",0,3)
-					sendtoserver(event.key)
-		drawscreen()
-	
+					keypress=CONSOLE+"-KEY_"+str(event.key)
+					#sendtoserver(event.key)
+					sendtoserver(keypress)
+				drawscreen()	
+					
+		#if debug: print "end running event loop"
+		
+
+
 	
 screen = pygame.display.set_mode(SCREENRES)	
 
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	print "Creating socket..."
+	SVRCONN=1
+	sendtoserver("CONNECT-"+CONSOLE)
+except socket.error:
+	rendertext("OFFLINE","CLEAR",5,1)
+	print 'Failed to create socket'
+	SVRCONN=2
 
- 
 
 if __name__ == '__main__': 
 	main()
