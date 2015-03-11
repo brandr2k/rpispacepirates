@@ -31,4 +31,8 @@ Graphics:
 README.md
 * Add instructions for Splashscreen
 
+gh-pages
+* Add instructions for Splashscreen
+* Add screenshots
+
 
