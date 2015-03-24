@@ -17,7 +17,8 @@ from Queue import *
 ## networking - connect to this host
 HOST="127.0.0.1"
 PORT=1701
-CONSOLE="HELM"
+#CONSOLE="HELM"
+CONSOLE="WEAPONS"
 
 debug=1  #print to screen for debugging
 

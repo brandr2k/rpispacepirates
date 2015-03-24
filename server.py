@@ -45,6 +45,41 @@ def drawhelm(addr):
 	rendertext('MAIN VIEWER:,descript,10,1',addr)
 	rendertext('FRONT,info,10,2',addr)
 	
+
+def drawweapons(addr):
+        ## Clear Console Offline line
+        rendertext(' ,CLEAR,5,1',addr)
+
+        rendertext('=WEAPONS=,title,0,0',addr)
+        rendertext('SHIP STATUS:,descript,0,2',addr)
+        rendertext('RED ALERT,warn,0,3',addr)
+        rendertext('SHIELDS,descript,1,2',addr)
+        rendertext('OFF,warn,1,3',addr)
+        rendertext('TARGET:,descript,2,0',addr)
+        rendertext('X33,value,2,1',addr)
+        rendertext('DISTANCE:,descript,2,2',addr)
+        rendertext('1020k,value,2,3',addr)
+        rendertext('STATUS:,descript,3,0',addr)
+        rendertext('LOCKED,warn,3,1',addr)
+        rendertext('WEAPON:,other,4,2',addr)
+        rendertext('IN STOCK,other,4,3',addr)
+        rendertext('EMP:,descript,5,2',addr)
+        rendertext('2,value,5,3',addr)
+        rendertext('MISSILES:,descript,6,2',addr)
+        rendertext('14,value,6,3',addr)
+        rendertext('BEAM FREQ:,descript,7,0',addr)
+        rendertext('A,info,7,1',addr)
+        rendertext('TUBE 1:,descript,8,0',addr)
+        rendertext('MISSILE,info,8,1',addr)
+        rendertext('LOADED,warn,8,2',addr)
+        rendertext('TUBE 2:,descript,9,0',addr)
+        rendertext('EMP,info,9,1',addr)
+        rendertext('LOADED,warn,9,2',addr)
+        rendertext('TUBE 3:,descript,10,0',addr)
+        rendertext(' ,info,10,1',addr)
+        rendertext('EMPTY,info,10,2',addr)
+
+
  
 # Datagram (udp) socket
 try :
@@ -102,7 +137,17 @@ while 1:
 			else:
 				CLIENTLIST["HELM"]=addr
 			
-			
+                elif data=="CONNECT-WEAPONS":
+                        CLIENT="WEAPONS"
+                        print "Sending screen setup data.."
+                        drawweapons(addr)
+                        print "Done sending screen setup data"
+                        if CLIENTLIST.has_key("WEAPONS"):
+                                print "WEAPONS already here"
+                        else:
+                                CLIENTLIST["WEAPONS"]=addr
+
+		
 		elif 'HELM-KEY_' in data:
 			print "key recv from helm: $s" % (keypress)
 			keypress=data.strip('HELM-KEY_')
