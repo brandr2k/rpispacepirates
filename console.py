@@ -15,7 +15,11 @@ from Queue import *
 
 
 ## networking - connect to this host
-HOST="127.0.0.1"
+#HOST="127.0.0.1"
+if sys.argv[1]:
+   HOST=sys.argv[1]
+else:
+   HOST="127.0.0.1"
 PORT=1701
 #CONSOLE="HELM"
 CONSOLE="WEAPONS"
