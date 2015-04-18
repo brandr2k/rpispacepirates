@@ -1,6 +1,6 @@
 space pi-rates
 ==============
-website: http://kwadroke.github.io/space_pi-rates/
+website: http://kwadroke.github.io/rpispacepirates/
 
 Space Pi-rates is a Starship Bridge Simulator created for the Raspberry Pi. Space Pi-rates is inspired by Artemis Spaceship Bridge Simulator. The game is not yet functional and is a Work in Progress.
 
