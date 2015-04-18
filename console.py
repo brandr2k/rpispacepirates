@@ -185,7 +185,19 @@ def setonline():
 def setoffline():
     ## Clear Screen and put offline message on screen
     background.fill(COLORDEFAULTBACK)
-    rendertext("CONSOLE OFFLINE","CLEAR",5,1)    
+    rendertext("CONSOLE OFFLINE","CLEAR",5,1)
+    
+def checkcmd(cmd):
+    ##check cmd and run
+    indata = cmd.split( )
+    if indata[0]=="cmd_SHUTDOWN":
+        os._exit(1)
+    elif indata[0]=="cmd_offline":
+        setoffline()
+    elif indata[0]=="cmd_online":
+        setonline()
+    else:
+        print "Unknown command"
 
 def listenerloop(soc):  ##Threading this due to hangups between pygame listening for events and listening for incoming data from network
     ## Prints don't work here, need to do something to show that it's working.
@@ -200,9 +212,8 @@ def listenerloop(soc):  ##Threading this due to hangups between pygame listening
                 if reply=="OK" or reply=="HELLO":
                     ## We're connected
                     if debug: print reply #Printing doesn't work
-                elif reply=="SHUTDOWN":
-                    break
-                    #sys.exit("Forcing Shutdown")
+                elif "cmd_" in reply:
+                    checkcmd(reply)
                 else:
                     ## split out list of strings for building GUI
                     text, type, line,col=reply.split(',')
@@ -219,6 +230,7 @@ def eventloop():
     threading.Thread(target=listenerloop, args=(s,)).start()   ##working (at the moment)
     print "Server Connection status =", SVRCONN
     print "Thread Started"
+    KEYCOUNT=0
     while 1:    
         ##Quit
         for event in pygame.event.get(QUIT):
@@ -236,9 +248,13 @@ def eventloop():
                     if debug: rendertext(str(event.key),"descript",0,3)
                     keypress=CONSOLE+"-KEY_"+str(event.key)
                     #sendtoserver(event.key)
+                    KEYCOUNT=KEYCOUNT + 1
                     sendtoserver(keypress)
                 drawscreen()
+                print KEYCOUNT
         #if debug: print "end running event loop"
+        
+        time.sleep(0.1)
 screen = pygame.display.set_mode(SCREENRES)
 
 try:
