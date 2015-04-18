@@ -6,7 +6,8 @@ import string
 HOST = ''   # Symbolic name meaning all available interfaces
 PORT = 1701 # Arbitrary non-privileged port
 
-CLIENTLIST={}
+keypress=""
+CLIENTLIST=dict()
 
 def sendtoms(sendmsg,addr):  #send data to mainscreen
     print sendmsg
@@ -16,12 +17,15 @@ def rendertext(sendmsg, sendaddr):  #send data to client
     print sendmsg
     s.sendto(sendmsg, sendaddr)
     
+    
+def consoleshutdown():
+    for val in CLIENTLIST.values():
+        print "Sending Shutdown to Client at ",val
+        s.sendto("SHUTDOWN", val)
 
 def drawhelm(addr):
     ## Clear Console Offline line
-    
     rendertext(' ,CLEAR,5,1',addr)    
-    
     rendertext('=HELM=,title,0,0',addr)
     rendertext('ENERGY:,descript,1,2',addr)
     rendertext('1000,info,1,3',addr)
@@ -31,14 +35,12 @@ def drawhelm(addr):
     rendertext('OFF,value,3,1',addr)
     rendertext('WARP:,descript,4,0',addr)
     rendertext('OFF,value,4,1',addr)
-    
     rendertext('REVERSE:,descript,2,2',addr)
     rendertext('OFF,value,2,3',addr)
     rendertext('DOCKING:,descript,3,2',addr)
     rendertext('OFF,value,3,3',addr)
     rendertext('SHIELDS:,descript,4,2',addr)
     rendertext('DOWN,warn,4,3',addr)
-    
     rendertext('TARGET DIR:,descript,9,0',addr)
     rendertext('208,info,9,1',addr)
     rendertext('TARGET DIST:,descript,9,2',addr)
@@ -50,7 +52,6 @@ def drawhelm(addr):
 def drawweapons(addr):
         ## Clear Console Offline line
         rendertext(' ,CLEAR,5,1',addr)
-
         rendertext('=WEAPONS=,title,0,0',addr)
         rendertext('SHIP STATUS:,descript,0,2',addr)
         rendertext('RED ALERT,warn,0,3',addr)
@@ -79,8 +80,6 @@ def drawweapons(addr):
         rendertext('TUBE 3:,descript,10,0',addr)
         rendertext(' ,info,10,1',addr)
         rendertext('EMPTY,info,10,2',addr)
-
-
  
 # Datagram (udp) socket
 try :
@@ -91,7 +90,7 @@ except socket.error, msg :
     print 'Failed to create socket. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
     sys.exit()
  
- 
+
 # Bind socket to local host and port
 try:
     s.bind((HOST, PORT))
@@ -110,24 +109,18 @@ while 1:
         data = d[0]
         addr = d[1]
         #print str(addr)
-     
         if not data: 
             break
         else:
             rendertext("OK",addr)
-            
         print 'Message[' + addr[0] + ':' + str(addr[1]) + '] - ' + data.strip()
-        
         CLIENT="NULL"
-        
         if data=="CONNECT-MAINSCREEN":
             CLIENT="MAINSCREEN"
             if CLIENTLIST.has_key("MAINSCREEN"):
                 print "MAINSCREEN already here"
             else:
                 CLIENTLIST["MAINSCREEN"]=addr    
-        
-        
         elif data=="CONNECT-HELM":
             CLIENT="HELM"
             print "Sending screen setup data.."
@@ -137,7 +130,6 @@ while 1:
                 print "HELM already here"
             else:
                 CLIENTLIST["HELM"]=addr
-            
         elif data=="CONNECT-WEAPONS":
                         CLIENT="WEAPONS"
                         print "Sending screen setup data.."
@@ -147,24 +139,22 @@ while 1:
                                 print "WEAPONS already here"
                         else:
                                 CLIENTLIST["WEAPONS"]=addr
-
-        
         elif 'HELM-KEY_' in data:
-            print "key recv from helm: $s" % (keypress)
             keypress=data.strip('HELM-KEY_')
+            print "key recv from helm: $s" % (keypress)
             #Send keys to mainscreen
             sendtoms(keypress,CLIENTLIST["MAINSCREEN"])
-            
         elif 'sendtoall_' in data:
-            print "Sending to every screen"
             gmdata=data.strip('sendtoall_')
+            print "Sending to every screen; ", gmdata
             rendertext(gmdata+',title,0,0', CLIENTLIST["HELM"])
-            
+        elif 'SHUTDOWN' in data:
+            print "Sending Shutdown"
+            consoleshutdown()
         elif data=="echo":
             rendertext(data, sendaddr)
         else :
             print "unreconized data: ",data
     except (KeyboardInterrupt, SystemExit):
         sys.exit()
-     
 s.close()

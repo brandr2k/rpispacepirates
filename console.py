@@ -200,8 +200,9 @@ def listenerloop(soc):  ##Threading this due to hangups between pygame listening
                 if reply=="OK" or reply=="HELLO":
                     ## We're connected
                     if debug: print reply #Printing doesn't work
-                elif reply=="SHUTDOWN!!!":
-                    sys.exit("Forcing Shutdown")
+                elif reply=="SHUTDOWN":
+                    break
+                    #sys.exit("Forcing Shutdown")
                 else:
                     ## split out list of strings for building GUI
                     text, type, line,col=reply.split(',')
@@ -219,11 +220,11 @@ def eventloop():
     print "Server Connection status =", SVRCONN
     print "Thread Started"
     while 1:    
-        #Quit    
+        ##Quit
         for event in pygame.event.get(QUIT):
             sendtoserver("DISCONNECT-"+CONSOLE);
             return
-        # Key Down
+        ## Key Down
         for event in pygame.event.get(KEYDOWN):
             #print "received event"
             if event.type == KEYDOWN:
@@ -236,14 +237,9 @@ def eventloop():
                     keypress=CONSOLE+"-KEY_"+str(event.key)
                     #sendtoserver(event.key)
                     sendtoserver(keypress)
-                drawscreen()    
-                    
+                drawscreen()
         #if debug: print "end running event loop"
-        
-
-
-    
-screen = pygame.display.set_mode(SCREENRES)    
+screen = pygame.display.set_mode(SCREENRES)
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
