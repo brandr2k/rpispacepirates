@@ -8,9 +8,10 @@ import sys  #for exit
 import time
 
 import select
-import thread
+#import thread
+import threading
 
-from thread import *
+#from thread import *
 from Queue import *
 
 
@@ -95,6 +96,7 @@ def drawscreen():
     
 def rendertext(text,type,line,col):
     ## Display text to screen
+    print "Rendering screen"
     col=int(col)
     line=int(line)
     text=str(text)
@@ -186,36 +188,36 @@ def setoffline():
     rendertext("CONSOLE OFFLINE","CLEAR",5,1)    
 
 def listenerloop(soc):  ##Threading this due to hangups between pygame listening for events and listening for incoming data from network
-    
+    ## Prints don't work here, need to do something to show that it's working.
     setonline() ## Clear offline message
     while 1:
-        #if debug: print "running network loop"
-        #Network listener
+        ##Network listener
         if SVRCONN==1:
-            
             #global reply
-            #print "loop: server is connected"
             reply, addr = soc.recvfrom(1024) #(1024)
-            
             if reply:
                 if debug: print 'Server reply : ' + reply
                 if reply=="OK" or reply=="HELLO":
-                    if debug: print reply
+                    ## We're connected
+                    if debug: print reply #Printing doesn't work
+                elif reply=="SHUTDOWN!!!":
+                    sys.exit("Forcing Shutdown")
                 else:
-                    #split out list of strings for building GUI
+                    ## split out list of strings for building GUI
                     text, type, line,col=reply.split(',')
                     rendertext(text, type, line,col)
-                    print "text"+text
             else:
-                if debug: print "No reply"
-                
-            #if debug: print "end network loop."
+                if debug: print "No reply"  ##Printing Doesn't work
         
 def eventloop():
+    setoffline() #Set console offline screen, incase we can't connect to server
     ## Event loop
     #startnet()
-    mythread=thread.start_new_thread(listenerloop, (s, ))
-    setoffline() #Set console offline screen, incase we can't connect to server
+    #mythread=thread.start_new_thread(target=listenerloop, (s,))  ## doesn't work - keeping for prosperity
+    print "Starting Thread..."
+    threading.Thread(target=listenerloop, args=(s,)).start()   ##working (at the moment)
+    print "Server Connection status =", SVRCONN
+    print "Thread Started"
     while 1:    
         #Quit    
         for event in pygame.event.get(QUIT):

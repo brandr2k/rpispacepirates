@@ -1,38 +1,80 @@
 ToDo
 
 mainscreen.py
-* Replace PHP & urlencode/decode  with UDP Python networking
-* connect to consoleserver.py
+* Replace PHP & urlencode/decode  with UDP Python networking to shipserver
+* connect to shipserver.py
+* increase universe size
+* Fix Steering
+* Mirror sensorsconsole for map
 
 console.py
-* fix lockup problem with networking
+* fix lockup problem with networking {IMPORTANT}
 
 sensorsconsole.py
 * CREATE
 * use mainscreen.py code for displaying instrument data full screen with details
-* connect to consoleserver.py
+* connect to shipserver.py
 
-server.py/consoleserver.py
-* rename to consoleserver.py
+server.py/shipserver.py/BridgeServer
+* rename to shipserver.py
 * listen to mainscreen.py
-* connect to gameserver.py
 * add more consoles
-
-gameserver.py
-* CREATE
-* listen to multiple bridges (consoleserver.py)
-* add AI ships
-
-
-Graphics:
-* Add stations
-* add asteroids
+* Add AI
+* connect to gameserver.py (Phase 2)
 
 README.md
 * Add instructions for Splashscreen
 
 gh-pages
 * Add instructions for Splashscreen
-* Add screenshots
+* Add screenshots [DONE]
 
+gameserver.py (Phase 2)
+* CREATE [DONE]
+* listen to multiple bridges (consoleserver.py)
+* add AI ships
+
+----
+
+Graphics:
+* Add stations
+* add asteroids
+
+
+
+AI
+* Create AI scripts
+	* Make simple. Make ships head toward closest target with affinity for player ship.
+	
+=====
+Phases for ToDos with completion dates
+
+Phase 1 (For Maker Faire - May 2)
+* MainScreen, Sensors, Engineering/Damage Control, Helm, Weapons, Communications
+* connect to shipserver
+* Fight/Destroy AI enemies (No boarding yet)
+
+
+Phase 1.3 (If time for Maker Faire)
+* Salvage by running over ?
+* Status Console
+
+Phase 1.5 (If time for Maker Faire)
+* Console Security
+* Disable Ships
+* Board Ships
+
+Phase 2 (GlitchCon - July 31)
+* Lighting
+* Library Computer
+* Self Destruct
+* Docking with bases
+ 
+Phase 3 (Ark-La-Tex Comic Con Sept 5)
+* Multiship Server
+* Pay off Bounty Hunters
+
+Phase 4 (ComiCon-way -  Nov 14)
+* Missions
+* Game Master
 
