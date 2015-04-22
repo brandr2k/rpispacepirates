@@ -9,12 +9,17 @@ PORT = 1701 # Arbitrary non-privileged port
 #keypress=""
 CLIENTLIST=dict()
 
+SHIPSTATS={"posx":0, "posy":0, "posz":0, "shieldstr":0,"shieldstatus":"down","dir":0, "name":"Hiro-Maru","faction":"pirates","wantedlevel":0,"money":0,"alertstatus":"green"}
+ABLETOMOVE=1
+DOCKED=0
+DIRECTIONCHANGE=0
+
 def sendtoms(sendmsg,addr):  #send data to mainscreen
     print sendmsg
     s.sendto(sendmsg, addr)
 
 def rendertext(sendmsg, sendaddr):  #send data to client
-    print sendmsg
+    print sendmsg, sendaddr
     s.sendto(sendmsg, sendaddr)
     
 def sendcommand(cmd, thisconsole): ## Send commands to clients
@@ -85,7 +90,55 @@ def drawweapons(addr):
     rendertext('TUBE 3:,descript,10,0',addr)
     rendertext(' ,info,10,1',addr)
     rendertext('EMPTY,info,10,2',addr)
- 
+
+def processkey(station,key):
+    if station=="helm":
+        if key=="276": #left
+            print "Left pressed ", station
+            if ABLETOMOVE!=0:
+                updatedir(-1)
+        elif key=="275": #right
+            print "Right pressed ", station
+            if ABLETOMOVE!=0:
+                updatedir(1)
+        elif key=="273": #up
+            print "Up pressed ", station
+        elif key=="274": #down
+            print "Down pressed ", station
+        elif key=="32": #space
+            print "space pressed ", station
+        elif key=="49": #1
+            print "1 pressed ", station
+        elif key=="50": #2
+            print "2 pressed ", station
+        elif key=="51": #3
+            print "3 pressed ", station
+        elif key=="52": #4
+            print "4 pressed ", station
+        elif key=="113": #q
+            print "q pressed ", station
+        elif key=="119": #w
+            print "w pressed ", station
+        elif key=="101": #e
+            print "e pressed ", station
+        elif key=="114": #r
+            print "r pressed ", station
+        else:
+            print key
+
+def updatedir(direction):
+    global SHIPSTATS
+    shipdir=int(SHIPSTATS["dir"])
+    currentdirection = (shipdir + direction) % 360
+    dir = '%03d' % currentdirection ## Padding
+    print "Direction now: ",dir
+    SHIPSTATS["dir"]=currentdirection
+    sendtext="%s,active,2,1" % (dir)
+    addr=CLIENTLIST["HELM"]
+    print "Sending to HELM", sendtext, addr
+    rendertext(sendtext,addr)
+    
+    
 # Datagram (udp) socket
 try :
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -149,6 +202,7 @@ while 1:
             print "key recv from helm: ",keypress
             ## Send keys to mainscreen
             #sendtoms(keypress,CLIENTLIST["MAINSCREEN"])
+            processkey("helm",keypress)
         elif 'sendtoall_' in data:
             gmdata=data.strip('sendtoall_')
             print "Sending to every screen; ", gmdata

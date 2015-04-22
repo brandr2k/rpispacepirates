@@ -253,7 +253,7 @@ def eventloop():
                 drawscreen()
                 print KEYCOUNT
         #if debug: print "end running event loop"
-        print "."
+        if debug: print "."
         time.sleep(0.1)
 screen = pygame.display.set_mode(SCREENRES)
 
