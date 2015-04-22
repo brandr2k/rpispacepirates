@@ -232,14 +232,14 @@ def eventloop():
     print "Thread Started"
     KEYCOUNT=0
     while 1:    
-        ##Quit
-        for event in pygame.event.get(QUIT):
-            sendtoserver("DISCONNECT-"+CONSOLE);
-            return
-        ## Key Down
-        for event in pygame.event.get(KEYDOWN):
-            #print "received event"
-            if event.type == KEYDOWN:
+        for event in pygame.event.get():
+            ##Quit
+            if event.type == QUIT:
+                print "Exiting"
+                sendtoserver("DISCONNECT-"+CONSOLE);
+                os.exit("Exiting")
+            ## Key Down
+            elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     sendtoserver("DISCONNECT-"+CONSOLE);
                     return
@@ -253,7 +253,7 @@ def eventloop():
                 drawscreen()
                 print KEYCOUNT
         #if debug: print "end running event loop"
-        
+        print "."
         time.sleep(0.1)
 screen = pygame.display.set_mode(SCREENRES)
 
