@@ -19,7 +19,7 @@ import uuid
 MYID=uuid.uuid4()
 refid=MYID.hex  ##Unique ship ID (removes dashes) (send to comms for debugging/noise info?)
 
-import demo
+#import demo
 import pi3d
 
 if sys.version_info[0] == 3:
