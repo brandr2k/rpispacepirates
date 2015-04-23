@@ -16,9 +16,8 @@ run these commands at the terminal to setup (only needs to be done once):
     cd /home/pi
     git clone http://github.com/kwadroke/space_pi-rates.git
     sudo apt-get update
-    sudo apt-get install python-pip 
+    sudo apt-get install python-pip python-imaging
     sudo pip install pi3d
-    sudo pip install Pillow
     sudo reboot
 
 To run game (console):
