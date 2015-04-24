@@ -22,11 +22,11 @@ run these commands at the terminal to setup (only needs to be done once):
 
 To run game (console):
 
-    cd space_pi-rates
+    cd rpispacepirates
     python console.py
 
 To run game (mainscreen):
 
-    cd space_pi-rates
+    cd rpispacepirates
     sudo python mainscreen.py
 
