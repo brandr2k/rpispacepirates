@@ -10,7 +10,7 @@ Raspberry Pi Instructions:
 run these commands at the terminal to setup (only needs to be done once):
 
     sudo echo framebuffer_width=640 >> /boot/config.txt
-    sudo echo framebuffer_width=480 >> /boot/config.txt
+    sudo echo framebuffer_height=480 >> /boot/config.txt
     sudo chown root:video /dev/fb*
     sudo usermod -a -G video pi
     cd /home/pi
