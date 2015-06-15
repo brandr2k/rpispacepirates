@@ -19,7 +19,6 @@ import uuid
 MYID=uuid.uuid4()
 refid=MYID.hex  ##Unique ship ID (removes dashes) (send to comms for debugging/noise info?)
 
-#import demo  ##not needed since we installed pi3d with pip
 import pi3d
 
 if sys.version_info[0] == 3:
@@ -79,6 +78,7 @@ print("""===================================
 == P Fires beams
 == Q to turn left, E to turn right
 == I to climb, K to desend
+== 1 Toggle Instruments
 ================================""")
 
 SHADER = pi3d.Shader("uv_bump") #for objects to look 3D
@@ -88,13 +88,35 @@ GRAVITY = 0.00001 # 9.8 #m/s**2
 LD = 10 #10 #lift/drag ratio
 DAMPING = 0.95 #reduce roll and pitch rate each update_variables
 BOOSTER = 1.5 #extra manoevreability boost to defy 1st Low of Thermodynamics.
+
+#--Weapons
+
 #load bullet images
 BULLET_TEX = [] #list to hold Texture refs
-iFiles = glob.glob(sys.path[0] + "/assets/textures/starship/bullet??.png") ### Replace with beams/missles
+iFiles = glob.glob(sys.path[0] + "/assets/textures/starship/bullet??.png") 
 iFiles.sort() # order is vital to animation!
 for f in iFiles:
   BULLET_TEX.append(pi3d.Texture(f))
-DAMAGE_FACTOR = 50 #dived by distance of shoot()
+  
+#load torp1 images - Not yet used
+TORP1_TEX = [] #list to hold Texture refs
+iFiles = glob.glob(sys.path[0] + "/assets/textures/starship/torp1/torp??.png") 
+iFiles.sort() # order is vital to animation!
+for f in iFiles:
+  TORP1_TEX.append(pi3d.Texture(f))
+  
+#load torp2 images - Not yet used
+TORP2_TEX = [] #list to hold Texture refs
+iFiles = glob.glob(sys.path[0] + "/assets/textures/starship/torp2/torp??.png") 
+iFiles.sort() # order is vital to animation!
+for f in iFiles:
+  TORP2_TEX.append(pi3d.Texture(f))
+
+#-- Move to config file?
+DAMAGE_FACTOR = 50 #dived by distance of shoot() 
+TORP1_DAMAGE_FACTOR = 100 #dived by distance of shoot()
+TORP2_DAMAGE_FACTOR = 130 #dived by distance of shoot()
+
 NR_TM = 1.0 #check much less frequently until something comes back
 FA_TM = 5.0
 NR_DIST = 250   ## Near Distance?
@@ -253,7 +275,7 @@ class Aeroplane(object):
     sin_roll = math.sin(math.radians(self.roll))  
     ### start looking here for turning....
     h_force = (self.power_setting - drag) * cos_pitch - lift * sin_pitch
-    v_force = lift * cos_pitch * cos_roll - self.mass #* GRAVITY
+    v_force = lift * cos_pitch * cos_roll - self.mass #* GRAVITY # No/very low gravity
     h_acc = h_force / self.mass
     v_acc = v_force / self.mass
     self.h_speed += h_acc * dt
@@ -325,13 +347,14 @@ class Aeroplane(object):
 class Instruments(object):
   def __init__(self):
     wd = DISPLAY.width
-    print(str(wd))
+    #print(str(wd))
     ht = DISPLAY.height
-    print(str(ht))
+    #print(str(ht))
     
     asi_tex = pi3d.Texture("assets/textures/airspeed_indicator.png")  ### Update these with more sci-fi looking images
     alt_tex = pi3d.Texture("assets/textures/altimeter.png")
-    rad_tex = pi3d.Texture("assets/textures/radar.png")  ## Use for Sensors
+    #rad_tex = pi3d.Texture("assets/textures/radar.png")  ## Use for Sensors
+    rad_tex = pi3d.Texture("assets/textures/sensors.png")  ## New Sensors
     dot_tex = pi3d.Texture("assets/textures/radar_dot.png")  ##Use for sensors
     ndl_tex = pi3d.Texture("assets/textures/instrument_needle.png")
     sprlogo_tex = pi3d.Texture("assets/textures/spr_logo.png") ##Logo
@@ -341,8 +364,11 @@ class Instruments(object):
     self.alt = pi3d.ImageSprite(alt_tex, FLATSH, camera=CAMERA2D,
           w=128, h=128, x=0, y=-ht/2+64, z=2)
 
+    #self.rad = pi3d.ImageSprite(rad_tex, FLATSH, camera=CAMERA2D,
+          #w=128, h=128, x=128, y=-ht/2+64, z=2)
     self.rad = pi3d.ImageSprite(rad_tex, FLATSH, camera=CAMERA2D,
-          w=128, h=128, x=128, y=-ht/2+64, z=2)
+          w=screenwidth, h=screenheight, x=0, y=-0, z=2) #New sensors screen
+
     self.dot = pi3d.ImageSprite(dot_tex, FLATSH, camera=CAMERA2D,
           w=16, h=16, z=1)
 
@@ -580,22 +606,7 @@ def json_load(ae, others): ### Replace this with UDP networking
       print(r.getcode())
       return False
   except Exception as e:
-    print("exception:", e)
-
-
-
-### remove this part of the networking (it's for ID) defined at the top of page (better unique id)
-#MAC address
-"""
-try:
-  refid = (open("/sys/class/net/eth0/address").read()).strip()
-except:
-  try:
-    refid = (open("/sys/class/net/wlan0/address").read()).strip()
-  except:
-    refid = "00:00:00:00:00:00"
-"""
-    
+    print("exception:", e)  
     
     
 #create the instances of Aeroplane
@@ -674,16 +685,7 @@ while DISPLAY.loop_running() and not inputs.key_state("KEY_ESC"):
   else:
     cam_rot -= mx * 0.1
     cam_pitch -= my * 0.1
-  #"""
-  """ joystick input
-  mx, my = inputs.get_joystickR()
-  if cam_toggle:
-    a.set_ailerons(-mx * 0.06)
-    a.set_elevator(my * 0.02)
-  else:
-    cam_rot -= mx * 2.0
-    cam_pitch -= my * 2.0
-  """
+
   
   ### Control this over network
   if inputs.key_state("KEY_W") or inputs.get_hat()[1] == -1: #increase throttle

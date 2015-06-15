@@ -2,7 +2,10 @@ space pi-rates
 ==============
 website: http://kwadroke.github.io/rpispacepirates/
 
-Space Pi-rates is a Starship Bridge Simulator created for the Raspberry Pi. Space Pi-rates is inspired by Artemis Spaceship Bridge Simulator. The game is not yet functional and is a Work in Progress.
+Space Pi-rates (aka SPR) is a Starship Bridge Simulator created for the Raspberry Pi. Space Pi-rates is inspired by Artemis Spaceship Bridge Simulator. The game is not yet functional and is a Work in Progress.
+
+SPR uses Python, PyGame & Pi3D  
+
 
 
 Raspberry Pi Instructions:
@@ -45,7 +48,7 @@ Windows Desktop Instructions For Pi3D (Mainscreen & Science) (Work in progress)
       pip install Pillow
       pip install pi3d
     Download Pi3D Dlls from https://github.com/paddywwoof/pi3d_windll/archive/master.zip
-    and extract the dlls to the rpispacepirates folder for your system
+    and extract the dlls to the rpispacepirates folder for your system (32bit/64bit)
 
 
 To start server:

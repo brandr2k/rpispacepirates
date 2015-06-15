@@ -138,6 +138,9 @@ def updatedir(direction):
     addr=CLIENTLIST["HELM"]
     print "Sending to HELM", sendtext, addr
     rendertext(sendtext,addr)
+ 
+def updateshipname(name):
+
     
     
 # Datagram (udp) socket
