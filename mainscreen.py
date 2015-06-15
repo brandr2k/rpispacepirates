@@ -498,7 +498,7 @@ def json_load(ae, others): ### Replace this with UDP networking
   jstring = json.dumps([ae.refid, ae.last_time, ae.x, ae.y, ae.z,
       ae.h_speed, ae.v_speed, ae.pitch, ae.direction, ae.roll,
       ae.pitchrate, ae.yaw, ae.rollrate, ae.power_setting, ae.damage], separators=(',',':'))
-  print jstring
+  print(jstring)
   if ae.nearest:
     n_id = ae.nearest.refid
     n_damage = ae.nearest.other_damage
@@ -717,8 +717,8 @@ while DISPLAY.loop_running() and not inputs.key_state("KEY_ESC"):
     if instdisplay==True:
         instdisplay=False
     else:
-    instdisplay=True
-	
+        instdisplay=True
+
   if inputs.key_state("KEY_0"): 
     print("Screenshot")
     pi3d.screenshot("screenshots/screenshot.jpg")
