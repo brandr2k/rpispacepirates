@@ -9,7 +9,8 @@ PORT = 1701 # Arbitrary non-privileged port
 #keypress=""
 CLIENTLIST=dict()
 
-SHIPSTATS={"posx":0, "posy":0, "posz":0, "shieldstr":0,"shieldstatus":"down","dir":0, "name":"Hiro-Maru","faction":"pirates","wantedlevel":0,"money":0,"alertstatus":"green"}
+#SHIPSTATS={"posx":0, "posy":0, "posz":0, "shieldstr":0,"shieldstatus":"down","dir":0, "name":"Hiro-Maru","faction":"pirates","wantedlevel":0,"money":0,"alertstatus":"green"}
+SHIPSTATS={"shipid":0,"last_time":0, "posx":0, "posy":0, "posz":0,"h_speed":0,"v_speed":0,"pitch":0,"direction":0,"roll":0,"pitchrate":0,"yaw":0,"rollrate":0,"power_setting":0,"damage":0}
 ABLETOMOVE=1
 DOCKED=0
 DIRECTIONCHANGE=0

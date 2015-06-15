@@ -19,7 +19,7 @@ import uuid
 MYID=uuid.uuid4()
 refid=MYID.hex  ##Unique ship ID (removes dashes) (send to comms for debugging/noise info?)
 
-#import demo
+#import demo  ##not needed since we installed pi3d with pip
 import pi3d
 
 if sys.version_info[0] == 3:
@@ -37,24 +37,24 @@ audio=True   #turn on sound
 screenoverride=True
 
 if screenoverride==True:
-	#screenwidth=640
-	#screenheight=480
-	screenwidth=800
-	screenheight=600
+    #screenwidth=640
+    #screenheight=480
+    screenwidth=800
+    screenheight=600
 else:
-	screenwidth=0
-	screenheight=0
-	
+    screenwidth=0
+    screenheight=0
+    
 
 
 if audio==True:
-	import pygame
-	pygame.init()
-	bgnoise = pygame.mixer.Sound('assets/sounds/brownnoise.ogg')
-	beamsound = pygame.mixer.Sound('assets/sounds/slimeball.wav')
-	clock = pygame.time.Clock()
-	bgnoise.play()
-	#beamsound.play()
+    import pygame
+    pygame.init()
+    bgnoise = pygame.mixer.Sound('assets/sounds/brownnoise.ogg')
+    beamsound = pygame.mixer.Sound('assets/sounds/slimeball.wav')
+    clock = pygame.time.Clock()
+    bgnoise.play()
+    #beamsound.play()
 
 
 #display, camera, shader
@@ -394,6 +394,7 @@ class Instruments(object):
       self.dot_list.append([o.refid, dx, dy])
     self.update_time = ae.last_pos_time
 
+''' ## Commenting out
 def json_load(ae, others): ### Replace this with UDP networking
   """httprequest other players. Sends own data and gets back array of all
   other players within sight. This function runs in a background thread
@@ -485,6 +486,102 @@ def json_load(ae, others): ### Replace this with UDP networking
       return False
   except Exception as e:
     print("exception:", e)
+'''
+
+#New networking
+def json_load(ae, others): ### Replace this with UDP networking
+  """Sends own data and gets back array of all
+  other players within sight. This function runs in a background thread
+  """
+  #TODO pass nearest, nearest.hp and own hp merge in some way
+  tm_now = time.time()
+  jstring = json.dumps([ae.refid, ae.last_time, ae.x, ae.y, ae.z,
+      ae.h_speed, ae.v_speed, ae.pitch, ae.direction, ae.roll,
+      ae.pitchrate, ae.yaw, ae.rollrate, ae.power_setting, ae.damage], separators=(',',':'))
+  print jstring
+  if ae.nearest:
+    n_id = ae.nearest.refid
+    n_damage = ae.nearest.other_damage
+    ae.nearest.other_damage = 0.0
+  else:
+    n_id = ""
+    n_damage = 0.0
+  params = urllib_parse.urlencode({"id":ae.refid, "tm":tm_now, "x":ae.x, "z":ae.z,
+          "json":jstring, "nearest":n_id, "damage":n_damage}) ##!
+  others["start"] = tm_now #used for polling freqency
+  #urlstring = "http://www.eldwick.org.uk/sharecalc/rpi_json.php?{0}".format(params)
+  urlstring = "http://localhost/rpi_json.php?{0}".format(params)
+  try:
+    r = urllib_request.urlopen(urlstring)  ##!
+    if r.getcode() == 200: #good response
+      jstring = r.read().decode("utf-8") ##!
+      #print "jstring: %s" % (jstring)
+      if len(jstring) > 50: #error messages are shorter than this
+        olist = json.loads(jstring)
+        #smooth time offset value
+        ae.del_time = ae.del_time * 0.9 + olist[0] * 0.1 if ae.del_time else olist[0]
+        #own damage is cumulative and not reset on server until dead!
+        ae.damage = olist[1]
+        #if ae.damage > 2.0 * DAMAGE_FACTOR: #explode return to GO etc
+        #print(ae.damage)
+        olist = olist[2:]
+        """
+        synchronisation system: sends time.time() which is used to calculate
+        an offset on the server and which is inserted as the second term 
+        in the json string. When the list of other players comes back from
+        the server it is preceded by the same offset time inserted in this json.
+        This is used to adjust the last_time for all
+        the other avatars.
+        """
+        nearest = None
+        ae.rtime = 60
+        for o in olist:  ## AI should go somewhere in here on the server....
+          if not(o[0] in others):
+            others[o[0]] = Aeroplane("assets/models/cigar1.obj", 0.9, o[0])
+          oa = others[o[0]] #oa is other aeroplane, ae is this one!
+          oa.refif = o[0]
+          #exponential smooth time offset values
+          oa.del_time = oa.del_time * 0.9 + o[1] * 0.1 if oa.del_time else o[1]
+          oa.last_time = o[2] + oa.del_time - ae.del_time # o[1] inserted by server code
+          dt = tm_now - oa.last_time
+          if oa.x == 0.0:
+            oa.x, oa.y, oa.z = o[3], o[4], o[5]
+          nx = o[3] + o[6] * math.sin(math.radians(o[9])) * dt
+          ny = o[4] + o[7] * dt
+          nz = o[5] + o[6] * math.cos(math.radians(o[9])) * dt
+          distance = math.hypot(nx - ae.x, nz - ae.z)
+          if not nearest or distance < nearest:
+            nearest = distance
+            ae.nearest = oa
+          oa.x_perr, oa.y_perr, oa.z_perr = oa.x - nx, oa.y - ny, oa.z - nz
+          oa.x_ierr += oa.x_perr
+          oa.y_ierr += oa.y_perr
+          oa.z_ierr += oa.z_perr
+          oa.d_err = ((oa.direction - (o[9] + o[12] * dt) + 180) % 360 - 180) / 2
+          oa.h_speed = o[6]
+          oa.v_speed = o[7]
+          oa.pitch = o[8]
+          oa.roll = o[10]
+          oa.pitchrate = o[11]
+          oa.yaw = o[12]
+          oa.rollrate = o[13]
+          oa.power_setting = o[14]
+          oa.damage = o[15]
+
+        if nearest:
+          ae.rtime = NR_TM + (max(min(nearest, FA_DIST), NR_DIST) - NR_DIST) / \
+                  (FA_DIST - NR_DIST) * (FA_TM - NR_TM)
+        #TODO tidy up inactive others; flag not to draw, delete if inactive for long enough
+        return True
+      else:
+        print(jstring)
+        return False
+    else:
+      print(r.getcode())
+      return False
+  except Exception as e:
+    print("exception:", e)
+
 
 
 ### remove this part of the networking (it's for ID) defined at the top of page (better unique id)
@@ -620,7 +717,7 @@ while DISPLAY.loop_running() and not inputs.key_state("KEY_ESC"):
     if instdisplay==True:
         instdisplay=False
     else:
-	instdisplay=True
+    instdisplay=True
 	
   if inputs.key_state("KEY_0"): 
     print("Screenshot")
