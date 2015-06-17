@@ -140,7 +140,7 @@ def updatedir(direction):
     rendertext(sendtext,addr)
  
 def updateshipname(name):
-
+   print 'Update shipname here'
     
     
 # Datagram (udp) socket
