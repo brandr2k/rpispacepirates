@@ -4,10 +4,11 @@ website: http://kwadroke.github.io/rpispacepirates/
 
 Space Pi-rates (aka SPR) is a Starship Bridge Simulator created for the Raspberry Pi. Space Pi-rates is inspired by Artemis Spaceship Bridge Simulator. The game is not yet functional and is a Work in Progress.
 
-SPR uses:
-Python http://python.org
-PyGame http://pygames.org
-& Pi3D  https://github.com/tipam/pi3d
+SPR is developed using:  
+Python http://python.org  
+PyGame http://pygames.org  
+Pi3D  https://github.com/tipam/pi3d  
+& PI3D Demos http://github.com/pi3d/pi3d_demos  
 
 
 
