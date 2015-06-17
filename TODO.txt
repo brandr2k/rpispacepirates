@@ -9,6 +9,7 @@ mainscreen.py
 
 console.py
 * fix lockup problem with networking {IMPORTANT} [DONE?]
+* fix exiting problem with thread
 
 sensorsconsole.py
 * CREATE
