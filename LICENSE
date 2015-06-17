@@ -35,7 +35,8 @@
 
 # Some code used by Space Pi-rates is used from the software from
 # www.github.com/pi3d/pi3d_demos
+# Specifically DogFight.py & related files
 # in which the above LICENSE applies.
 
 
-Textures & Sounds may be under their own licenses. Please see licenses in their directories.
+Textures & Sounds may be under their own licenses. Please see the licenses & credits in their directories.
