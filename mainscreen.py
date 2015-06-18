@@ -171,7 +171,7 @@ class Aeroplane(object):
                         [plane, 2.0, 0.5, 8.0, 90,0,0, 1,1,1],
                         [plane, 2.0, 0.5, 8.0, 0,90,90, 1,1,1]])
     """
-    self.bullets.merge([[plane, 0.0, 0.5, 8.0, 90,0,0, 1,1,1]]) ## fixed single beam
+    self.bullets.merge([[plane, 0.0, 0.5, 8.0, 90,0,0, 1,1,1]]) ## fixed single beam - probably needs to be configured for each ship
     self.num_b = len(BULLET_TEX)
     self.seq_b = self.num_b
     self.bullets.set_draw_details(FLATSH, [BULLET_TEX[0]])
@@ -309,7 +309,7 @@ class Aeroplane(object):
     self.direction += math.degrees(self.yaw) * dt - self.d_err * P_FACTOR
 
     ## debug/details
-    #print("X: %s |Y: %s |dir: %s|v speed: %s|h speed: %s" % (str(self.x), str(self.y), str(self.direction), str(self.v_speed), str(self.h_speed) ))
+    print("X: %s |Y: %s |dir: %s|v speed: %s|h speed: %s" % (str(self.x), str(self.y), str(self.direction), str(self.v_speed), str(self.h_speed) ))
     ## report to server str(self.direction) to send to helm
 
     #set values of model
@@ -643,7 +643,11 @@ mymap.set_draw_details(SHADER, [mountimg1, bumpimg, reflimg], 0.0, 0.0)
 #mymap.set_fog((0.5, 0.5, 0.5, 1.0), 4000)  ### make fog dark to hide?
 #mymap.set_fog((0.0, 0.0, 0.0, 1,0), 4000)  ### make fog dark to hide?
 # init events
-inputs = pi3d.InputEvents()
+if hasattr(sys, 'getwindowsversion') :
+  print("OS is Windows - Input doesn't work here")
+else :
+  inputs = pi3d.InputEvents()
+
 #inputs.get_mouse_movement()
 CAMERA.position((0.0, 0.0, -10.0)) #org
 
@@ -652,117 +656,151 @@ cam_rot, cam_pitch = 0, 0
 cam_toggle = True #control mode
 mx=0
 my=0
-while DISPLAY.loop_running() and not inputs.key_state("KEY_ESC"):
-  inputs.do_input_events() 
 
-  if inputs.key_state("KEY_Q") or inputs.key_state("BTN_BASE3"): #control mode
-    print("X - 1 %s" % (mx))
-    mx=mx-1
-    #mx=-1
-  if inputs.key_state("KEY_E") or inputs.key_state("BTN_BASE4"): #control mode
-    print("X + 1 %s" % (mx))
-    mx=mx+1
-    #mx=1
-  if inputs.key_state("KEY_SPACE") or inputs.key_state("BTN_BASE4"): #control mode
-    print("Centering. X=%s Y=%s" % (mx,my))
-    mx=0
-    my=0
-  if inputs.key_state("KEY_I") or inputs.key_state("BTN_BASE5"): #control mode
-    print("Y - 1 %s" % (my))
-    my=my-1
-    #my=-1
-  if inputs.key_state("KEY_K") or inputs.key_state("BTN_BASE6"): #control mode
-    print("Y + 1 %s " % (my))
-    my=my+1
-    #my=1
-
-  #mx, my, mv, mh, md = inputs.get_mouse_movement()
-  print("--%s--"%(mx))
-  #_, _, mv, mh, md = inputs.get_mouse_movement()
-  if cam_toggle:
-    a.set_ailerons(-mx * 0.001)
-    a.set_elevator(my * 0.001)
-  else:
-    cam_rot -= mx * 0.1
-    cam_pitch -= my * 0.1
-
-  
-  ### Control this over network
-  if inputs.key_state("KEY_W") or inputs.get_hat()[1] == -1: #increase throttle
-    a.set_power(1)
-    print("+ speed")
-  if inputs.key_state("KEY_S") or inputs.get_hat()[1] == 1: #throttle back
-    a.set_power(-1)
-    print("- speed")
-  if inputs.key_state("KEY_X"): #jump to first enemy!
-    print("Jump")
-    for i in others:
-      if i != "start":
-        b = others[i]
-        a.x, a.y, a.z = b.x, b.y + 5, b.z
-        break
-  if inputs.key_state("KEY_B") or inputs.key_state("BTN_BASE2"): #brakes
-    print("brakes")
-    a.h_speed *= 0.99
-  if inputs.key_state("KEY_V") or inputs.key_state("BTN_TOP2"): #view mode
-    print("viewmode")
-    cam_toggle = False
-    a.set_ailerons(0)
-    a.set_elevator(0)
-  if inputs.key_state("KEY_C") or inputs.key_state("BTN_BASE"): #control mode
-    print("control mode")
-    cam_toggle = True
-    cam_rot, cam_pitch = 0, 0
-
-  if inputs.key_state("KEY_1"): 
-    print("Toggle Instuments")
+if hasattr(sys, 'getwindowsversion') :  ## If Windows, don't use input - This could go away when networking functions
+  while DISPLAY.loop_running() :
+    a.update_variables()
+    loc = a.update_position(mymap.calcHeight(a.x, a.z))
+    CAMERA.reset()
+    #CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, 0) #unreal view
+    CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, -a.roll) #air-sick view
+    CAMERA.position((loc[0], loc[1], loc[2]))
     if instdisplay==True:
-        instdisplay=False
+      inst.draw()  ### comment this out to disable instruments
+    a.draw()  ### Draw your ship
+
+    for i in others:
+      if i == "start":
+        continue
+      b = others[i]
+      b.update_variables()
+      b.update_position(mymap.calcHeight(b.x, b.z))
+      b.draw()
+    #do httprequest if thread not already started and enough time has elapsed
+    if not (thr.isAlive()) and (a.last_pos_time > (others["start"] + a.rtime)):
+      thr = threading.Thread(target=json_load, args=(a, others))
+      thr.daemon = True #allows the program to exit even if a Thread is still running
+      thr.start()
+      
+    if a.last_pos_time > (inst.update_time + NR_TM):
+      inst.update(a, others)
+
+    #mymap.draw() ### Draw "ground"
+    myecube.position(loc[0], loc[1], loc[2])
+    myecube.draw()
+else: #Other OS's - like Linux
+  while DISPLAY.loop_running() and not inputs.key_state("KEY_ESC"):
+    inputs.do_input_events() 
+
+    if inputs.key_state("KEY_Q") or inputs.key_state("BTN_BASE3"): #control mode
+      print("X - 1 %s" % (mx))
+      mx=mx-1
+      #mx=-1
+    if inputs.key_state("KEY_E") or inputs.key_state("BTN_BASE4"): #control mode
+      print("X + 1 %s" % (mx))
+      mx=mx+1
+      #mx=1
+    if inputs.key_state("KEY_SPACE") or inputs.key_state("BTN_BASE4"): #control mode
+      print("Centering. X=%s Y=%s" % (mx,my))
+      mx=0
+      my=0
+    if inputs.key_state("KEY_I") or inputs.key_state("BTN_BASE5"): #control mode
+      print("Y - 1 %s" % (my))
+      my=my-1
+      #my=-1
+    if inputs.key_state("KEY_K") or inputs.key_state("BTN_BASE6"): #control mode
+      print("Y + 1 %s " % (my))
+      my=my+1
+      #my=1
+
+    #mx, my, mv, mh, md = inputs.get_mouse_movement()
+    print("--%s--"%(mx))
+    #_, _, mv, mh, md = inputs.get_mouse_movement()
+    if cam_toggle:
+      a.set_ailerons(-mx * 0.001)
+      a.set_elevator(my * 0.001)
     else:
-        instdisplay=True
-
-  if inputs.key_state("KEY_0"): 
-    print("Screenshot")
-    pi3d.screenshot("screenshots/screenshot.jpg")
-
-  #if inputs.key_state("BTN_LEFT") or inputs.key_state("BTN_PINKIE") or inputs.key_state("KEY_P"): #shoot
-  if inputs.key_state("KEY_P"): #shoot
-    print("shoot")
-    #target is always nearest others set during last json_load()
-    #tx, ty, tz = 0., 0.0, 0.0
-    if a.nearest:
-      tx, ty, tz = a.nearest.x, a.nearest.y, a.nearest.z
-      a.nearest.other_damage += a.shoot([tx, ty, tz])
-
-  a.update_variables()
-  loc = a.update_position(mymap.calcHeight(a.x, a.z))
-  CAMERA.reset()
-  #CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, 0) #unreal view
-  CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, -a.roll) #air-sick view
-  CAMERA.position((loc[0], loc[1], loc[2]))
-  if instdisplay==True:
-    inst.draw()  ### comment this out to disable instruments
-  a.draw()  ### Draw your ship
-
-  for i in others:
-    if i == "start":
-      continue
-    b = others[i]
-    b.update_variables()
-    b.update_position(mymap.calcHeight(b.x, b.z))
-    b.draw()
-  #do httprequest if thread not already started and enough time has elapsed
-  if not (thr.isAlive()) and (a.last_pos_time > (others["start"] + a.rtime)):
-    thr = threading.Thread(target=json_load, args=(a, others))
-    thr.daemon = True #allows the program to exit even if a Thread is still running
-    thr.start()
+      cam_rot -= mx * 0.1
+      cam_pitch -= my * 0.1
     
-  if a.last_pos_time > (inst.update_time + NR_TM):
-    inst.update(a, others)
+    ### Control this over network
+    if inputs.key_state("KEY_W") or inputs.get_hat()[1] == -1: #increase throttle
+      a.set_power(1)
+      print("+ speed")
+    if inputs.key_state("KEY_S") or inputs.get_hat()[1] == 1: #throttle back
+      a.set_power(-1)
+      print("- speed")
+    if inputs.key_state("KEY_X"): #jump to first enemy!
+      print("Jump")
+      for i in others:
+        if i != "start":
+          b = others[i]
+          a.x, a.y, a.z = b.x, b.y + 5, b.z
+          break
+    if inputs.key_state("KEY_B") or inputs.key_state("BTN_BASE2"): #brakes
+      print("brakes")
+      a.h_speed *= 0.99
+    if inputs.key_state("KEY_V") or inputs.key_state("BTN_TOP2"): #view mode
+      print("viewmode")
+      cam_toggle = False
+      a.set_ailerons(0)
+      a.set_elevator(0)
+    if inputs.key_state("KEY_C") or inputs.key_state("BTN_BASE"): #control mode
+      print("control mode")
+      cam_toggle = True
+      cam_rot, cam_pitch = 0, 0
 
-  #mymap.draw() ### Draw "ground"
-  myecube.position(loc[0], loc[1], loc[2])
-  myecube.draw()
+    if inputs.key_state("KEY_1"): 
+      print("Toggle Instuments")
+      if instdisplay==True:
+          instdisplay=False
+      else:
+          instdisplay=True
 
-inputs.release()
+    if inputs.key_state("KEY_0"): 
+      print("Screenshot")
+      pi3d.screenshot("screenshots/screenshot.jpg")
+
+    #if inputs.key_state("BTN_LEFT") or inputs.key_state("BTN_PINKIE") or inputs.key_state("KEY_P"): #shoot
+    if inputs.key_state("KEY_P"): #shoot
+      print("shoot")
+      #target is always nearest others set during last json_load()
+      #tx, ty, tz = 0., 0.0, 0.0
+      if a.nearest:
+        tx, ty, tz = a.nearest.x, a.nearest.y, a.nearest.z
+        a.nearest.other_damage += a.shoot([tx, ty, tz])
+
+    a.update_variables()
+    loc = a.update_position(mymap.calcHeight(a.x, a.z))
+    CAMERA.reset()
+    #CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, 0) #unreal view
+    CAMERA.rotate(-20 + cam_pitch, -loc[3] + cam_rot, -a.roll) #air-sick view
+    CAMERA.position((loc[0], loc[1], loc[2]))
+    if instdisplay==True:
+      inst.draw()  ### comment this out to disable instruments
+    a.draw()  ### Draw your ship
+
+    for i in others:
+      if i == "start":
+        continue
+      b = others[i]
+      b.update_variables()
+      b.update_position(mymap.calcHeight(b.x, b.z))
+      b.draw()
+    #do httprequest if thread not already started and enough time has elapsed
+    if not (thr.isAlive()) and (a.last_pos_time > (others["start"] + a.rtime)):
+      thr = threading.Thread(target=json_load, args=(a, others))
+      thr.daemon = True #allows the program to exit even if a Thread is still running
+      thr.start()
+      
+    if a.last_pos_time > (inst.update_time + NR_TM):
+      inst.update(a, others)
+
+    #mymap.draw() ### Draw "ground"
+    myecube.position(loc[0], loc[1], loc[2])
+    myecube.draw()
+
+  inputs.release()
+ 
+  
 DISPLAY.destroy()
