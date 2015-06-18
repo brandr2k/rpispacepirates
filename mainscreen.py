@@ -536,10 +536,12 @@ def json_load(ae, others): ### Replace this with UDP networking
           "json":jstring, "nearest":n_id, "damage":n_damage}) ##!
   others["start"] = tm_now #used for polling freqency
   #urlstring = "http://www.eldwick.org.uk/sharecalc/rpi_json.php?{0}".format(params)
-  urlstring = "http://localhost/rpi_json.php?{0}".format(params)
+  urlstring = "http://localhost/rpi_json.php?{0}".format(params) ##!
+  
   try:
+    #Start UDP networking here
     r = urllib_request.urlopen(urlstring)  ##!
-    if r.getcode() == 200: #good response
+    if r.getcode() == 200: #good response  ##!
       jstring = r.read().decode("utf-8") ##!
       #print "jstring: %s" % (jstring)
       if len(jstring) > 50: #error messages are shorter than this
@@ -602,8 +604,9 @@ def json_load(ae, others): ### Replace this with UDP networking
       else:
         print(jstring)
         return False
+        
     else:
-      print(r.getcode())
+      print(r.getcode()) #!!
       return False
   except Exception as e:
     print("exception:", e)  

@@ -1,0 +1,112 @@
+
+Network data information to send between consoles and shipserver
+
+========================
+
+
+{'console': 'helm','adjxdir':10} helm change x direction by 10
+{'reply': 'helm', 'adjxdir': '10, 'status': 'deny'} (send to client if action is denied)
+{'reply': 'helm', 'adjxdir': '10, 'status': 'allow'} (send to client if action is allowed)
+{'reply': 'helm', 'adjxdir': '10, 'status': 'recv'} (send to client if action is recieved but not allowed/denied) (mostly for debugging)
+{'reply': 'helm', 'adjxdir': '10, 'status': 'pending'} (send to client if action is pending response) (used mostly for "slower type events")
+
+{'console': 'eng','adjshieldpower':90} eng change shield power by 90
+
+{'console': 'main','':''} mainscreen
+  
+{'console': 'comms', 'hail':'x90', 'commfreq': 'A'}  comms open hailing freq A to X90
+{'reply': 'comms', 'hail': 'x90, 'commfreq':'A', 'status': 'allow'} ship comms allowed (connected)
+{'reply': 'comms', 'hail': 'x90, 'commfreq':'A', 'status': 'deny'} hailing failed
+{'reply': 'comms', 'hail': 'x90, 'commfreq':'A', 'status': 'pending'} waiting for response
+
+
+
+{'reply': 'helm', 'msg': 'ok'} reply to server ok
+
+
+
+
+status
+  on/off (aka UP/DOWN,TRUE/FALSE, online/offline)
+  allow/deny/pending (allowed to do this and accept/reject status, or pending)
+  offline/online (switch console status)  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+helm
+  send/rec
+    adjydir     number
+    adjzdir     number
+    adjimpulse  -0.25, 0, 0.25, 0.5, 0.75, 1.0
+    adjwarp     0,1,2,3,4
+    reqdock     on/off
+    
+  
+  recv
+    shields       on/off/disabled
+    targetname     text 
+    targetdir       number
+    energy        number
+    viewer         front/rear/port/starboard 
+    damage        ???
+    dockstatus    true/false
+    consolestatus   online/offline/destroyed
+    alertstatus            blue/green/yellow/red/destroyed
+  
+weapons
+  send/rec
+    tube1   loadweapon1/loadweapon2/loadweapon3/unload/fire
+    tube2   loadweapon1/loadweapon2/loadweapon3/unload/fire
+    tube3   loadweapon1/loadweapon2/loadweapon3/unload/fire
+    tube4   loadweapon1/loadweapon2/loadweapon3/unload/fire
+    beams   fire
+    beamfreq  A/B/C/D/E
+    shields   on/off
+    reqnextclosest  1
+    reqprevclosest  1
+    adjshipstatus     blue/green/yellow/red
+    shieldfreq    A/B/C/D/E
+    
+  recv
+    shields                   on/off/disabled
+    nextclosest               text
+    energy                    number
+    damage                  ???
+    targetname            text
+    targetdir                number 
+    targetafflication     number
+    targetstatus          exists/destoryed
+    targetdistance      number
+    alertstatus            blue/green/yellow/red/destroyed
+    weapon1count    number
+    weapon2count    number
+    weapon3count    number
+    tube1status   loaded/loading/empty/disabled
+    tube2status   loaded/loading/empty/disabled
+    tube3status   loaded/loading/empty/disabled
+    consolestatus   online/offline/destroyed
+    
+    
+science
+  send/rec
+    select                  text
+    passivescan         number
+    invasivescan        number
+    target                  text
+    
+    
+  recv
+    ships     text
+    scanstatus  passivescanning/passivecomplete/invasivescanning/invasivecomplete
+    shipaffiation     number
+    consolestatus   online/offline/destroyed
+    alertstatus            blue/green/yellow/red/destroyed
+    
+    
