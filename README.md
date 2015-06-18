@@ -10,6 +10,7 @@ PyGame http://pygames.org
 Pi3D  https://github.com/tipam/pi3d  
 & PI3D Demos http://github.com/pi3d/pi3d_demos  
 
+Models created using Misfit Model 3d http://www.misfitcode.com/misfitmodel3d/
 
 
 Raspberry Pi Instructions:
@@ -73,7 +74,7 @@ To run game (mainscreen):
     sudo python mainscreen.py
 
 
-To run game (mainscreen on Windows - not yet working):
+To run game (mainscreen on Windows - Can view screen, no input due to Pi3D & Windows):
 
     cd rpispacepirates
     python mainscreen.py

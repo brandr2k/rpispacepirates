@@ -199,11 +199,11 @@ def checkcmd(cmd):
     else:
         print "Unknown command"
 
-def listenerloop(soc):  ##Threading this due to hangups between pygame listening for events and listening for incoming data from network
+def listenerloop(soc, stop_event):  ##Threading this due to hangups between pygame listening for events and listening for incoming data from network
     ## Prints don't work here, need to do something to show that it's working.
     setonline() ## Clear offline message
-    while 1:
-        ##Network listener
+    while(not stop_event.is_set()):
+        ##Network listener       
         if SVRCONN==1:
             #global reply
             reply, addr = soc.recvfrom(1024) #(1024)
@@ -227,7 +227,8 @@ def eventloop():
     #startnet()
     #mythread=thread.start_new_thread(target=listenerloop, (s,))  ## doesn't work - keeping for prosperity
     print "Starting Thread..."
-    threading.Thread(target=listenerloop, args=(s,)).start()   ##working (at the moment)
+    mythread_stop=threading.Event()
+    mythread=threading.Thread(target=listenerloop, args=(s,mythread_stop)).start()   ##working (at the moment)
     print "Server Connection status =", SVRCONN
     print "Thread Started"
     KEYCOUNT=0
@@ -236,12 +237,19 @@ def eventloop():
             ##Quit
             if event.type == QUIT:
                 print "Exiting"
-                sendtoserver("DISCONNECT-"+CONSOLE);
+                sendtoserver("DISCONNECT-"+CONSOLE)
+                mythread_stop.set()
                 os.exit("Exiting")
             ## Key Down
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    sendtoserver("DISCONNECT-"+CONSOLE);
+                    sendtoserver("DISCONNECT-"+CONSOLE)
+                    mythread_stop.set()
+                    return
+                elif  event.key == K_F12:  
+                    sendtoserver("DISCONNECT-"+CONSOLE)
+                    mythread_stop.set()
+                    mythread=threading.Thread(target=listenerloop, args=(s,)).start()
                     return
                 else:
                     print "key pressed %s" % (event.key)
@@ -255,7 +263,11 @@ def eventloop():
         #if debug: print "end running event loop"
         if debug: print "."
         time.sleep(0.1)
+        
+        
 screen = pygame.display.set_mode(SCREENRES)
+
+
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
